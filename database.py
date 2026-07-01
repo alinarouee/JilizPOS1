@@ -83,3 +83,56 @@ def delete_product(product_id):
 
     conn.commit()
     conn.close()
+    # ------------------ سفارش ها ------------------
+
+def create_order(total):
+    conn = connect()
+    cur = conn.cursor()
+
+    cur.execute(
+        "INSERT INTO orders(total) VALUES(?)",
+        (total,)
+    )
+
+    order_id = cur.lastrowid
+
+    conn.commit()
+    conn.close()
+
+    return order_id
+
+
+def add_order_item(order_id, product_name, qty, price):
+    conn = connect()
+    cur = conn.cursor()
+
+    cur.execute("""
+        INSERT INTO order_items
+        (order_id, product_name, qty, price)
+        VALUES (?, ?, ?, ?)
+    """, (
+        order_id,
+        product_name,
+        qty,
+        price
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+def get_all_products():
+    conn = connect()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT id,name,category,price
+        FROM products
+        ORDER BY category,name
+    """)
+
+    rows = cur.fetchall()
+
+    conn.close()
+
+    return rows
